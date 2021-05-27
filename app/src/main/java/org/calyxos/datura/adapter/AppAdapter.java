@@ -322,7 +322,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
 
                 //initialize toggle states
                 //get background data status
-                mBackgroundToggle.setChecked(!mSettingsManager.isBlacklisted(app.uid));
+                mBackgroundToggle.setChecked(!mSettingsManager.isDenyListed(app.uid));
 
                 //get wifi status
                 mWifiToggle.setChecked(!mSettingsManager.getAppRestrictWifi(app.uid));
@@ -371,7 +371,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
                             mVpnToggle.setEnabled(false);
                         }
                     } else if (id == R.id.app_allow_background_toggle) {
-                        mSettingsManager.setIsBlacklisted(app.uid, !mBackgroundToggle.isChecked());
+                        mSettingsManager.setIsDenyListed(app.uid, !mBackgroundToggle.isChecked());
                     } else if (id == R.id.app_allow_wifi_toggle) {
                         mSettingsManager.setAppRestrictWifi(app.uid, !mWifiToggle.isChecked());
                     } else if (id == R.id.app_allow_mobile_toggle) {

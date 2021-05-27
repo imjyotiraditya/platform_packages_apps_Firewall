@@ -16,16 +16,16 @@ public class SettingsManager {
 
     private final NetworkPolicyManager mPolicyManager;
     private final SparseIntArray mUidPolicies = new SparseIntArray();
-    private boolean mBlacklistInitialized;
+    private boolean mDenyListInitialized;
 
     public SettingsManager(Context context) {
         mPolicyManager = NetworkPolicyManager.from(context);
     }
 
-    public void setIsBlacklisted(int uid, boolean blacklisted) throws IllegalArgumentException {
-        final int policy = blacklisted ? POLICY_REJECT_METERED_BACKGROUND : POLICY_NONE;
+    public void setIsDenyListed(int uid, boolean denyListed) throws IllegalArgumentException {
+        final int policy = denyListed ? POLICY_REJECT_METERED_BACKGROUND : POLICY_NONE;
         mUidPolicies.put(uid, policy);
-        if (blacklisted) {
+        if (denyListed) {
             mPolicyManager.addUidPolicy(uid, POLICY_REJECT_METERED_BACKGROUND);
         } else {
             mPolicyManager.removeUidPolicy(uid, POLICY_REJECT_METERED_BACKGROUND);
@@ -33,19 +33,19 @@ public class SettingsManager {
         mPolicyManager.removeUidPolicy(uid, POLICY_ALLOW_METERED_BACKGROUND);
     }
 
-    public boolean isBlacklisted(int uid) {
-        loadBlacklist();
+    public boolean isDenyListed(int uid) {
+        loadDenyList();
         return mUidPolicies.get(uid, POLICY_NONE) == POLICY_REJECT_METERED_BACKGROUND;
     }
 
-    private void loadBlacklist() {
-        if (mBlacklistInitialized) {
+    private void loadDenyList() {
+        if (mDenyListInitialized) {
             return;
         }
         for (int uid : mPolicyManager.getUidsWithPolicy(POLICY_REJECT_METERED_BACKGROUND)) {
             mUidPolicies.put(uid, POLICY_REJECT_METERED_BACKGROUND);
         }
-        mBlacklistInitialized = true;
+        mDenyListInitialized = true;
     }
 
     public boolean getAppRestrictAll(int uid) {
