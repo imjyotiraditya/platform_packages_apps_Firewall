@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/color_primary">
 
     <ImageView
@@ -10,7 +10,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_centerVertical="true"
-        app:srcCompat="@drawable/ic_defaults"/>
+        app:srcCompat="@drawable/ic_defaults" />
 
     <TextView
         android:id="@+id/main_title"
@@ -18,21 +18,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:textSize="16sp"
+        android:layout_toEndOf="@+id/icon"
         android:text="@string/use_defaults"
         android:textColor="@color/white"
-        android:layout_toEndOf="@+id/icon"/>
+        android:textSize="16sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/main_title"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:textSize="15sp"
+        android:layout_toEndOf="@+id/icon"
         android:text="@string/block_cleartext_etc"
         android:textColor="@color/white_1"
-        android:layout_toEndOf="@+id/icon"
-        android:layout_below="@+id/main_title"/>
+        android:textSize="15sp" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/toggle"

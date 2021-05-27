@@ -4,9 +4,7 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +19,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.calyxos.datura.R;
@@ -28,20 +28,20 @@ import org.calyxos.datura.settings.SettingsManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.List;
 
 public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> implements Filterable {
 
     private static final String TAG = AppAdapter.class.getSimpleName();
+    private static boolean isSearching = false;
+    private static String searchTerm = "";
     private final Context mContext;
     private final PackageManager mPackageManager;
     private final SettingsManager mSettingsManager;
     private final List<ApplicationInfo> mTotalApps = new ArrayList<>();
-    private List<ApplicationInfo> mAppsFiltered, mInstApps, mSysApps;
-    private String currentSort = "name";
-    private static boolean isSearching = false;
-    private static String searchTerm = "";
+    private final List<ApplicationInfo> mInstApps;
+    private final List<ApplicationInfo> mSysApps;
+    private List<ApplicationInfo> mAppsFiltered;
 
     public AppAdapter(Context context, PackageManager packageManager, List<ApplicationInfo> instApps, List<ApplicationInfo> sysApps) {
         mInstApps = instApps;
@@ -81,7 +81,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
 
     @Override
     public int getItemCount() {
-        if(mAppsFiltered != null)
+        if (mAppsFiltered != null)
             return mAppsFiltered.size();
         else return 0;
     }
@@ -130,38 +130,32 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
         List<UsageStats> usageStats = getUsageStats();
 
         List<ApplicationInfo> instApps = removeNullLabelApps(mInstApps);
-        instApps.sort(new Comparator<ApplicationInfo>() {
-            @Override
-            public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
-                long lhsTime = 0L, rhsTime = 0L;
-                for (UsageStats us : usageStats) {
-                    if (us.getPackageName().equals(lhs.packageName))
-                        lhsTime = us.getLastTimeUsed();
+        instApps.sort((lhs, rhs) -> {
+            long lhsTime = 0L, rhsTime = 0L;
+            for (UsageStats us : usageStats) {
+                if (us.getPackageName().equals(lhs.packageName))
+                    lhsTime = us.getLastTimeUsed();
 
-                    if (us.getPackageName().equals(rhs.packageName))
-                        rhsTime = us.getLastTimeUsed();
-                }
-                return Long.compare(rhsTime, lhsTime);//descending order
+                if (us.getPackageName().equals(rhs.packageName))
+                    rhsTime = us.getLastTimeUsed();
             }
+            return Long.compare(rhsTime, lhsTime);//descending order
         });
         ApplicationInfo ai = new ApplicationInfo();
         ai.processName = "Header1";
         instApps.add(0, ai);
 
         List<ApplicationInfo> sysApps = removeNullLabelApps(mSysApps);
-        sysApps.sort(new Comparator<ApplicationInfo>() {
-            @Override
-            public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
-                long lhsTime = 0L, rhsTime = 0L;
-                for (UsageStats us : usageStats) {
-                    if (us.getPackageName().equals(lhs.packageName))
-                        lhsTime = us.getLastTimeUsed();
+        sysApps.sort((lhs, rhs) -> {
+            long lhsTime = 0L, rhsTime = 0L;
+            for (UsageStats us : usageStats) {
+                if (us.getPackageName().equals(lhs.packageName))
+                    lhsTime = us.getLastTimeUsed();
 
-                    if (us.getPackageName().equals(rhs.packageName))
-                        rhsTime = us.getLastTimeUsed();
-                }
-                return Long.compare(rhsTime, lhsTime);//descending order
+                if (us.getPackageName().equals(rhs.packageName))
+                    rhsTime = us.getLastTimeUsed();
             }
+            return Long.compare(rhsTime, lhsTime);//descending order
         });
         ApplicationInfo ai1 = new ApplicationInfo();
         ai1.processName = "Header2";
@@ -171,8 +165,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
         mAppsFiltered.clear();
         mAppsFiltered.addAll(instApps);
         mAppsFiltered.addAll(sysApps);
-
-        currentSort = "last_used";
 
         notifyDataSetChanged();
     }
@@ -180,34 +172,24 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
     public void sortResultListByLastUsed() {
         List<UsageStats> usageStats = getUsageStats();
 
-        mAppsFiltered.sort(new Comparator<ApplicationInfo>() {
-            @Override
-            public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
-                long lhsTime = 0L, rhsTime = 0L;
-                for (UsageStats us : usageStats) {
-                    if (us.getPackageName().equals(lhs.packageName))
-                        lhsTime = us.getLastTimeUsed();
+        mAppsFiltered.sort((lhs, rhs) -> {
+            long lhsTime = 0L, rhsTime = 0L;
+            for (UsageStats us : usageStats) {
+                if (us.getPackageName().equals(lhs.packageName))
+                    lhsTime = us.getLastTimeUsed();
 
-                    if (us.getPackageName().equals(rhs.packageName))
-                        rhsTime = us.getLastTimeUsed();
-                }
-                return Long.compare(rhsTime, lhsTime); //descending order
+                if (us.getPackageName().equals(rhs.packageName))
+                    rhsTime = us.getLastTimeUsed();
             }
+            return Long.compare(rhsTime, lhsTime); //descending order
         });
-
-        currentSort = "last_used";
 
         notifyDataSetChanged();
     }
 
     public void sortListByName() {
         List<ApplicationInfo> instApps = removeNullLabelApps(mInstApps);
-        instApps.sort(new Comparator<ApplicationInfo>() {
-            @Override
-            public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
-                return lhs.loadLabel(mPackageManager).toString().compareTo(rhs.loadLabel(mPackageManager).toString());
-            }
-        });
+        instApps.sort((lhs, rhs) -> lhs.loadLabel(mPackageManager).toString().compareTo(rhs.loadLabel(mPackageManager).toString()));
 
         //add a placeholder for header text
         ApplicationInfo ai = new ApplicationInfo();
@@ -215,12 +197,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
         instApps.add(0, ai);
 
         List<ApplicationInfo> sysApps = removeNullLabelApps(mSysApps);
-        sysApps.sort(new Comparator<ApplicationInfo>() {
-            @Override
-            public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
-                return lhs.loadLabel(mPackageManager).toString().compareTo(rhs.loadLabel(mPackageManager).toString());
-            }
-        });
+        sysApps.sort((lhs, rhs) -> lhs.loadLabel(mPackageManager).toString().compareTo(rhs.loadLabel(mPackageManager).toString()));
 
         ApplicationInfo ai1 = new ApplicationInfo();
         ai1.processName = "Header2";
@@ -231,28 +208,13 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
         mAppsFiltered.addAll(instApps);
         mAppsFiltered.addAll(sysApps);
 
-        currentSort = "name";
-
         notifyDataSetChanged();
     }
 
     public void sortResultListByName() {
-        mAppsFiltered.sort(new Comparator<ApplicationInfo>() {
-            @Override
-            public int compare(ApplicationInfo lhs, ApplicationInfo rhs) {
-                return lhs.loadLabel(mPackageManager).toString().compareTo(rhs.loadLabel(mPackageManager).toString());
-            }
-        });
-
-        currentSort = "name";
+        mAppsFiltered.sort((lhs, rhs) -> lhs.loadLabel(mPackageManager).toString().compareTo(rhs.loadLabel(mPackageManager).toString()));
 
         notifyDataSetChanged();
-    }
-
-    public void reApplySort() {
-        if (currentSort.equals("name"))
-            sortListByName();
-        else sortListByLastUsed();
     }
 
     private List<ApplicationInfo> removeNullLabelApps(List<ApplicationInfo> list) {
@@ -278,13 +240,21 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
-        private Context mContext;
-        private PackageManager mPackageManager;
-        private SettingsManager mSettingsManager;
-        private LinearLayout mLinearLayout, mAccordion;
-        private SwitchCompat mMainToggle, mBackgroundToggle, mWifiToggle, mMobileToggle, mVpnToggle;
-        private TextView appName, header, settingStatus;
-        private ImageView appIcon, accordionIcon;
+        private final Context mContext;
+        private final PackageManager mPackageManager;
+        private final SettingsManager mSettingsManager;
+        private final LinearLayout mLinearLayout;
+        private final LinearLayout mAccordion;
+        private final SwitchCompat mMainToggle;
+        private final SwitchCompat mBackgroundToggle;
+        private final SwitchCompat mWifiToggle;
+        private final SwitchCompat mMobileToggle;
+        private final SwitchCompat mVpnToggle;
+        private final TextView appName;
+        private final TextView header;
+        private final TextView settingStatus;
+        private final ImageView appIcon;
+        private final ImageView accordionIcon;
 
         private ApplicationInfo app;
 
@@ -340,19 +310,13 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
                 header.setVisibility(View.GONE);
                 mAccordion.setVisibility(View.VISIBLE);
 
-                try {
-                    //here just in case
-                    PackageInfo packageInfo = this.mPackageManager.getPackageInfo(app.packageName, 0);
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-
                 appIcon.setImageDrawable(app.loadIcon(mPackageManager));
                 String name = app.loadLabel(mPackageManager).toString();
                 if (isSearching) {
                     int ind = name.toLowerCase().indexOf(searchTerm.toLowerCase());
-                    appName.setText(Html.fromHtml(name.replaceAll("(?i)" + searchTerm,
-                            "<b>" + name.substring(ind, (ind + searchTerm.length())) + "</b>")));
+                    String content = name.replaceAll("(?i)" + searchTerm,
+                            "<b>" + name.substring(ind, (ind + searchTerm.length())) + "</b>");
+                    appName.setText(HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_LEGACY));
                 } else
                     appName.setText(name);
 
@@ -382,60 +346,38 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
             if (v.equals(itemView) || v.getId() == R.id.accordion_icon) {
                 if (mLinearLayout.getVisibility() == View.VISIBLE) {
                     mLinearLayout.setVisibility(View.GONE);
-                    accordionIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_accordion_down, null));
+                    accordionIcon.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_accordion_down));
                 } else {
                     mLinearLayout.setVisibility(View.VISIBLE);
-                    accordionIcon.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_accordion_up, null));
+                    accordionIcon.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_accordion_up));
                 }
             } else {
                 try {
-                    switch (v.getId()) {
-                        case R.id.main_toggle:
-                            if (mMainToggle.isChecked()) {
-                                mSettingsManager.setAppRestrictAll(app.uid, false);
-                                // Re-enable all other toggles
-                                mBackgroundToggle.setEnabled(true);
-                                mWifiToggle.setEnabled(true);
-                                mMobileToggle.setEnabled(true);
-                                mVpnToggle.setEnabled(true);
-                            }
-                            else {
-                                mSettingsManager.setAppRestrictAll(app.uid, true);
-                                // Disable all other toggles
-                                mBackgroundToggle.setEnabled(false);
-                                mWifiToggle.setEnabled(false);
-                                mMobileToggle.setEnabled(false);
-                                mVpnToggle.setEnabled(false);
-                            }
-                            break;
-
-                        case R.id.app_allow_background_toggle:
-                            if (mBackgroundToggle.isChecked())
-                                mSettingsManager.setIsBlacklisted(app.uid, app.packageName, false);
-                            else
-                                mSettingsManager.setIsBlacklisted(app.uid, app.packageName, true);
-                            break;
-
-                        case R.id.app_allow_wifi_toggle:
-                            if (mWifiToggle.isChecked())
-                                mSettingsManager.setAppRestrictWifi(app.uid, false);
-                            else
-                                mSettingsManager.setAppRestrictWifi(app.uid, true);
-                            break;
-
-                        case R.id.app_allow_mobile_toggle:
-                            if (mMobileToggle.isChecked())
-                                mSettingsManager.setAppRestrictCellular(app.uid, false);
-                            else
-                                mSettingsManager.setAppRestrictCellular(app.uid, true);
-                            break;
-
-                        case R.id.app_allow_vpn_toggle:
-                            if (mVpnToggle.isChecked())
-                                mSettingsManager.setAppRestrictVpn(app.uid, false);
-                            else
-                                mSettingsManager.setAppRestrictVpn(app.uid, true);
-                            break;
+                    int id = v.getId();
+                    if (id == R.id.main_toggle) {
+                        if (mMainToggle.isChecked()) {
+                            mSettingsManager.setAppRestrictAll(app.uid, false);
+                            // Re-enable all other toggles
+                            mBackgroundToggle.setEnabled(true);
+                            mWifiToggle.setEnabled(true);
+                            mMobileToggle.setEnabled(true);
+                            mVpnToggle.setEnabled(true);
+                        } else {
+                            mSettingsManager.setAppRestrictAll(app.uid, true);
+                            // Disable all other toggles
+                            mBackgroundToggle.setEnabled(false);
+                            mWifiToggle.setEnabled(false);
+                            mMobileToggle.setEnabled(false);
+                            mVpnToggle.setEnabled(false);
+                        }
+                    } else if (id == R.id.app_allow_background_toggle) {
+                        mSettingsManager.setIsBlacklisted(app.uid, !mBackgroundToggle.isChecked());
+                    } else if (id == R.id.app_allow_wifi_toggle) {
+                        mSettingsManager.setAppRestrictWifi(app.uid, !mWifiToggle.isChecked());
+                    } else if (id == R.id.app_allow_mobile_toggle) {
+                        mSettingsManager.setAppRestrictCellular(app.uid, !mMobileToggle.isChecked());
+                    } else if (id == R.id.app_allow_vpn_toggle) {
+                        mSettingsManager.setAppRestrictVpn(app.uid, !mVpnToggle.isChecked());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -460,8 +402,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> impl
         }
 
         private void setStatusText() {
-            // Keep it as-is if all toggles are checkec
-            if (mMainToggle.isChecked() && mBackgroundToggle.isChecked() && mWifiToggle.isChecked() && mMobileToggle.isChecked() && mVpnToggle.isChecked()) {
+            // Keep it as-is if all toggles are checked
+            if (mMainToggle.isChecked() && mBackgroundToggle.isChecked()
+                    && mWifiToggle.isChecked() && mMobileToggle.isChecked()
+                    && mVpnToggle.isChecked()) {
                 settingStatus.setVisibility(View.VISIBLE);
                 return;
             }

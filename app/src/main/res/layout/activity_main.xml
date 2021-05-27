@@ -21,14 +21,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <ImageView
                 android:id="@+id/search_icon"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_margin="5dp"
                 android:layout_gravity="end"
+                android:layout_margin="5dp"
                 app:srcCompat="@drawable/ic_search_24" />
 
             <EditText
@@ -36,25 +36,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="5dp"
-                android:textColor="?android:textColorPrimary"
-                android:textColorHint="?android:textColorHint"
-                android:cursorVisible="true"
                 android:background="@android:color/transparent"
-                android:singleLine="true"
+                android:cursorVisible="true"
+                android:hint="@string/search"
                 android:lines="1"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:hint="@string/search"
-                android:visibility="gone"/>
+                android:singleLine="true"
+                android:textColor="?android:textColorPrimary"
+                android:textColorHint="?android:textColorHint"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/search_clear"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_margin="5dp"
                 android:layout_gravity="end"
-                app:srcCompat="@drawable/ic_close_24"
-                android:visibility="gone"/>
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_close_24" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -63,31 +63,34 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/container_padding_size"
         android:orientation="vertical"
+        android:padding="@dimen/container_padding_size"
         android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:text="@string/global_settings"
-            android:textSize="15sp"
-            android:layout_marginBottom="15dp"/>
+            android:textSize="15sp" />
 
-        <include layout="@layout/fragment_use_defaults"
-            android:layout_marginBottom="25dp"
+        <include
+            layout="@layout/fragment_use_defaults"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+            android:layout_marginBottom="25dp" />
 
-        <include layout="@layout/fragment_cleartext_traffic"
-            android:layout_marginBottom="25dp"
+        <include
+            layout="@layout/fragment_cleartext_traffic"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+            android:layout_marginBottom="25dp" />
 
-        <include layout="@layout/fragment_block_ad_trackers"
-            android:layout_marginBottom="0dp"
+        <include
+            layout="@layout/fragment_block_ad_trackers"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+            android:layout_marginBottom="0dp" />
 
     </LinearLayout>
 
@@ -95,13 +98,13 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/gray"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/container_padding_size"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/container_padding_size">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/app_list"

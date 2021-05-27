@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.UserHandle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -26,8 +25,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     private RecyclerView mAppList;
     private AppAdapter mAppAdapter;
     private EditText mSearchBar;
@@ -40,8 +37,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setTitle(R.string.app_name);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setTitle(R.string.app_name);
+        }
 
         mSearchIcon = findViewById(R.id.search_icon);
         mSearchIcon.setOnClickListener(this);
@@ -53,14 +52,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mSearchBar.getText().toString().isEmpty())
-                    mSearchClear.setVisibility(View.GONE);
-                else
-                    mSearchClear.setVisibility(View.VISIBLE);
+                mSearchClear.setVisibility(mSearchBar.getText().toString().isEmpty() ? View.GONE : View.VISIBLE);
 
                 //search list
-                if (mAppAdapter != null)
+                if (mAppAdapter != null) {
                     mAppAdapter.getFilter().filter(mSearchBar.getText().toString());
+                }
             }
 
             @Override
@@ -92,13 +89,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (ApplicationInfo ai : packages) {
             // Skip anything that isn't an "app" since we can't set policies for those, as
             // the framework code which handles setting the policies has a similar check.
-            if (UserHandle.isApp(ai.uid)) {
-                if ((ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-                    sysApps.add(ai);
-                } else {
-                    instApps.add(ai);
-                }
+            // if (UserHandle.isApp(ai.uid)) {
+            if ((ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                sysApps.add(ai);
+            } else {
+                instApps.add(ai);
             }
+            //}
         }
 
         if (mAppAdapter == null) {
@@ -116,43 +113,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                if (mSearchBar.getVisibility() == View.VISIBLE) {
-                    mSearchBar.setText("");
-                    mSearchBar.setVisibility(View.GONE);
-                    mSearchClear.setVisibility(View.GONE);
-                    mSearchIcon.setVisibility(View.VISIBLE);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            if (mSearchBar.getVisibility() == View.VISIBLE) {
+                mSearchBar.setText("");
+                mSearchBar.setVisibility(View.GONE);
+                mSearchClear.setVisibility(View.GONE);
+                mSearchIcon.setVisibility(View.VISIBLE);
 
-                    //reset list
-                    mAppAdapter.getFilter().filter(mSearchBar.getText().toString());
+                //reset list
+                mAppAdapter.getFilter().filter(mSearchBar.getText().toString());
 
-                    //remove virtual keypad
-                    //mSearchIcon.requestFocus();
-                    InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(mSearchIcon.getWindowToken(), 0);
-                } else
-                    onBackPressed();
-                break;
-            }
-
-            case R.id.action_sort: {
-                if (item.getTitle().equals(getString(R.string.sort_by_name))) {
-                    //Check and call a different sort function for search result list
-                    if (mSearchBar.getVisibility() == View.VISIBLE && !mSearchBar.getText().toString().isEmpty())
-                        mAppAdapter.sortResultListByName();
-                    else mAppAdapter.sortListByName();
-
-                    item.setTitle(getString(R.string.sort_by_last_used));
+                //remove virtual keypad
+                //mSearchIcon.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mSearchIcon.getWindowToken(), 0);
+            } else
+                onBackPressed();
+        } else if (itemId == R.id.action_sort) {
+            if (item.getTitle().equals(getString(R.string.sort_by_name))) {
+                //Check and call a different sort function for search result list
+                if (mSearchBar.getVisibility() == View.VISIBLE && !mSearchBar.getText().toString().isEmpty()) {
+                    mAppAdapter.sortResultListByName();
                 } else {
-                    if (mSearchBar.getVisibility() == View.VISIBLE && !mSearchBar.getText().toString().isEmpty())
-                        mAppAdapter.sortResultListByLastUsed();
-                    else mAppAdapter.sortListByLastUsed();
-
-                    item.setTitle(getString(R.string.sort_by_name));
+                    mAppAdapter.sortListByName();
                 }
 
-                break;
+                item.setTitle(getString(R.string.sort_by_last_used));
+            } else {
+                if (mSearchBar.getVisibility() == View.VISIBLE && !mSearchBar.getText().toString().isEmpty()) {
+                    mAppAdapter.sortResultListByLastUsed();
+                } else {
+                    mAppAdapter.sortListByLastUsed();
+                }
+
+                item.setTitle(getString(R.string.sort_by_name));
             }
         }
         return true;

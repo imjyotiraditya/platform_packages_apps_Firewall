@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
@@ -13,11 +13,11 @@
             android:id="@+id/main_title_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:textSize="16sp"
             android:text="@string/use_defaults"
-            android:layout_centerVertical="true" />
+            android:textSize="16sp" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/app_use_default_toggle"
@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:checked="true"/>
+            android:checked="true" />
 
     </RelativeLayout>
 
@@ -39,21 +39,21 @@
             android:id="@+id/main_title_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_toStartOf="@id/app_cleartext_toggle"
-            android:textSize="15sp"
             android:text="@string/allow_cleartext"
-            android:layout_centerVertical="true" />
+            android:textSize="15sp" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/app_cleartext_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="13dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:checked="true"/>
+            android:layout_marginStart="13dp"
+            android:checked="true" />
 
     </RelativeLayout>
 
@@ -67,12 +67,12 @@
             android:id="@+id/main_title_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:textSize="15sp"
-            android:layout_centerVertical="true"
             android:layout_toStartOf="@id/app_block_ads_toggle"
-            android:text="@string/block_ads_trackers" />
+            android:text="@string/block_ads_trackers"
+            android:textSize="15sp" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/app_block_ads_toggle"
@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:checked="true"/>
+            android:checked="true" />
 
     </RelativeLayout>
 

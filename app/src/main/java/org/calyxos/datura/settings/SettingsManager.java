@@ -14,19 +14,15 @@ import static android.net.NetworkPolicyManager.POLICY_REJECT_WIFI;
 
 public class SettingsManager {
 
-    private static final String TAG = SettingsManager.class.getSimpleName();
-    private Context mContext;
-    private NetworkPolicyManager mPolicyManager;
-    private SparseIntArray mUidPolicies = new SparseIntArray();
-    private boolean mWhitelistInitialized;
+    private final NetworkPolicyManager mPolicyManager;
+    private final SparseIntArray mUidPolicies = new SparseIntArray();
     private boolean mBlacklistInitialized;
 
     public SettingsManager(Context context) {
-        mContext =  context;
         mPolicyManager = NetworkPolicyManager.from(context);
     }
 
-    public void setIsBlacklisted(int uid, String packageName, boolean blacklisted) throws IllegalArgumentException {
+    public void setIsBlacklisted(int uid, boolean blacklisted) throws IllegalArgumentException {
         final int policy = blacklisted ? POLICY_REJECT_METERED_BACKGROUND : POLICY_NONE;
         mUidPolicies.put(uid, policy);
         if (blacklisted) {
@@ -81,7 +77,7 @@ public class SettingsManager {
         setAppRestriction(uid, POLICY_REJECT_CELLULAR, restrict);
     }
 
-    public void setAppRestrictVpn(int uid, boolean restrict) throws  RuntimeException {
+    public void setAppRestrictVpn(int uid, boolean restrict) throws RuntimeException {
         setAppRestriction(uid, POLICY_REJECT_VPN, restrict);
     }
 

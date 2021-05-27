@@ -4,17 +4,17 @@
     <item
         android:id="@+id/action_sort"
         android:title="@string/sort_by_name"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_settings"
         android:title="@string/settings"
         android:visible="false"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_about"
         android:title="@string/about"
         android:visible="false"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 </menu>
